@@ -2,7 +2,7 @@ module MyMoip
   class Commission
     include ActiveModel::Validations
 
-    attr_accessor :reason, :receiver_login, :fixed_value, :percentage_value
+    attr_accessor :reason, :receiver_login, :fixed_value, :percentage_value, :fee_payer
 
     validates_presence_of :reason, :receiver_login
     validates_presence_of :fixed_value, if: -> { percentage_value.nil? }
@@ -18,6 +18,7 @@ module MyMoip
       self.receiver_login   = attrs[:receiver_login]
       self.fixed_value      = attrs[:fixed_value]
       self.percentage_value = attrs[:percentage_value]
+      self.fee_payer        = attrs[:fee_payer]
     end
 
     def gross_amount(instruction)
@@ -43,6 +44,10 @@ module MyMoip
         n1.Comissionado {|n2| n2.LoginMoIP(receiver_login)}
         n1.ValorFixo(fixed_value) if fixed_value
         n1.ValorPercentual(percentage_value) if percentage_value
+      end
+
+      root.PagadorTaxa do |n1|
+        n1.LoginMoIP(receiver_login)
       end
 
       xml

@@ -4,9 +4,9 @@ module MyMoip
 
     attr_accessor :id, :payment_reason, :values, :payer,
                   :commissions, :fee_payer_login, :payment_receiver_login,
-                  :payment_receiver_name
+                  :payment_receiver_name, :url_notificacao, :url_retorno
 
-    validates_presence_of :id, :payment_reason, :values, :payer
+    validates_presence_of :id, :payment_reason, :values
     validate :commissions_value_must_be_lesser_than_values
     validate :payment_receiver_presence_in_commissions
 
@@ -19,10 +19,12 @@ module MyMoip
       self.fee_payer_login        = attrs[:fee_payer_login]
       self.payment_receiver_login = attrs[:payment_receiver_login]
       self.payment_receiver_name  = attrs[:payment_receiver_name]
+      self.url_notificacao        = attrs[:url_notificacao]
+      self.url_retorno            = attrs[:url_retorno]
     end
 
     def to_xml(root = nil)
-      raise ArgumentError, 'Invalid payer' if payer.invalid?
+      raise ArgumentError, 'Invalid payer' if (payer && payer.invalid?)
       raise ArgumentError, 'Invalid params for instruction' if self.invalid?
       if invalid_commission = commissions.detect { |c| c.invalid? }
         raise ArgumentError, "Invalid commission: #{invalid_commission}"
@@ -32,17 +34,17 @@ module MyMoip
       root = Builder::XmlMarkup.new(target: xml)
 
       root.EnviarInstrucao do |n1|
-        n1.InstrucaoUnica(TipoValidacao: "Transparente") do |n2|
+        n1.InstrucaoUnica do |n2|
           n2.Razao(@payment_reason)
           n2.Valores do |n3|
             @values.each { |v| n3.Valor("%.2f" % v, moeda: "BRL") }
           end
           n2.IdProprio(@id)
-
           commissions_to_xml n2  if !commissions.empty?
           payment_receiver_to_xml n2 if payment_receiver_login
-
-          n2.Pagador { |n3| @payer.to_xml(n3) }
+          n2.Pagador { |n3| @payer.to_xml(n3) } if self.payer
+          n2.URLNotificacao(@url_notificaca) if self.url_notificacao
+          n2.URLRetorno(@url_retorno) if self.url_retorno
         end
       end
 
