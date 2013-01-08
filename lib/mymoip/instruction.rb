@@ -43,7 +43,7 @@ module MyMoip
           commissions_to_xml n2  if !commissions.empty?
           payment_receiver_to_xml n2 if payment_receiver_login
           n2.Pagador { |n3| @payer.to_xml(n3) } if self.payer
-          n2.URLNotificacao(@url_notificaca) if self.url_notificacao
+          n2.URLNotificacao(@url_notificacao) if self.url_notificacao
           n2.URLRetorno(@url_retorno) if self.url_retorno
         end
       end
