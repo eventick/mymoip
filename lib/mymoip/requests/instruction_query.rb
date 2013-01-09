@@ -3,7 +3,7 @@ module MyMoip
     include HTTParty
     base_uri "https://desenvolvedor.moip.com.br/sandbox"
 
-    attr_reader :token
+    attr_reader :token, :response
 
     def initialize(token)
       @token = token
