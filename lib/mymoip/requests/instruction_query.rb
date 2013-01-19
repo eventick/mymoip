@@ -36,11 +36,11 @@ module MyMoip
     end
 
     def date
-      payment["Data"]
+      DateTime.parse(payment["Data"])
     end
 
     def escrow_end_date
-      payment["DataCredito"]
+      DateTime.parse(payment["DataCredito"])
     end
 
     def gross_amount
