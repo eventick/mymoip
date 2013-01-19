@@ -7,7 +7,10 @@ module MyMoip
 
     def initialize(token)
       @token = token
-      @auth = {username: "01010101010101010101010101010101", password: "ABABABABABABABABABABABABABABABABABABABAB" }
+      @auth = {
+        username: MyMoip.token,
+        password: MyMoip.key
+      }
     end
 
     def api_call
@@ -19,7 +22,11 @@ module MyMoip
     def result
       @response["ConsultarTokenResponse"]["RespostaConsultar"]["Autorizacao"]
     end
-
+    
+    def payment
+      result["Pagamento"]
+    end
+    
     def buyer_name
       result["Pagador"]["Nome"]
     end
@@ -29,35 +36,39 @@ module MyMoip
     end
 
     def date
-      result["Pagamento"][0]["Data"]
+      payment["Data"]
+    end
+
+    def escrow_end_date
+      payment["DataCredito"]
     end
 
     def gross_amount
-      result["Pagamento"][0]["TotalPago"]["__content__"]
+      payment["TotalPago"]["__content__"]
     end
 
     def fee_amount
-      result["Pagamento"][0]["TaxaMoIP"]["__content__"]
+      payment["TaxaMoIP"]["__content__"]
     end
 
     def net_amount
-      result["Pagamento"][0]["ValorLiquido"]["__content__"]
+      payment["ValorLiquido"]["__content__"]
     end
 
     def payment_type
-      result["Pagamento"][0]["FormaPagamento"]
+      payment["FormaPagamento"]
     end
 
     def payment_flag
-      result["Pagamento"][0]["InstituicaoPagamento"]
+      payment["InstituicaoPagamento"]
     end 
     
     def status
-      result["Pagamento"][0]["Status"]["Tipo"]
+      payment["Status"]["Tipo"]
     end 
 
     def id
-      result["Pagamento"][0]["CodigoMoIP"]
+      payment["CodigoMoIP"]
     end
   end
 end
