@@ -2,11 +2,7 @@ module MyMoip
   class Request
     include HTTParty
 
-    attr_reader :id, :response
-
-    def initialize(id)
-      @id = id
-    end
+    attr_reader :response
 
     def api_call(params, opts = {})
       opts[:logger]   ||= MyMoip.logger
@@ -14,14 +10,14 @@ module MyMoip
       opts[:password] ||= MyMoip.key
 
       opts[:logger].info "New #{self.class} being sent to MoIP."
-      opts[:logger].debug "#{self.class} of ##{@id} with #{params.inspect}"
+      opts[:logger].debug "#{self.class} of with #{params.inspect}"
 
       url = MyMoip.api_url + params.delete(:path)
       params[:basic_auth] = { username: opts[:username], password: opts[:password] }
 
       @response = HTTParty.send params.delete(:http_method), url, params
 
-      opts[:logger].debug "#{self.class} of ##{@id} to #{url} had response #{@response.inspect}"
+      opts[:logger].debug "#{self.class} to #{url} had response #{@response.inspect}"
     end
   end
 end
