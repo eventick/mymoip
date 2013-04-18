@@ -1,7 +1,7 @@
 module MyMoip
   class InstructionQuery
     include HTTParty
-    base_uri "https://desenvolvedor.moip.com.br/sandbox"
+    base_uri api_url
 
     attr_reader :token, :response
 
@@ -69,6 +69,15 @@ module MyMoip
 
     def id
       payment["CodigoMoIP"]
+    end
+
+    private
+    def self.api_url
+      if MyMoip.environment == "sandbox"
+        "https://desenvolvedor.moip.com.br/sandbox"
+      else
+        "https://www.moip.com.br"
+      end
     end
   end
 end
