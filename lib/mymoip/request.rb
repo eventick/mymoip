@@ -1,6 +1,7 @@
 module MyMoip
   class Request
     include HTTParty
+    debug_output $stderr
 
     attr_reader :response
 
