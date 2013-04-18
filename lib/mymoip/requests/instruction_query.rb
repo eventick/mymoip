@@ -1,11 +1,11 @@
 module MyMoip
   class InstructionQuery
     include HTTParty
-    base_uri api_url
 
     attr_reader :token, :response
 
     def initialize(token)
+      api_url
       @token = token
       @auth = {
         username: MyMoip.token,
@@ -72,11 +72,11 @@ module MyMoip
     end
 
     private
-    def self.api_url
-      if MyMoip.environment == "sandbox"
-        "https://desenvolvedor.moip.com.br/sandbox"
+    def api_url
+      self.base_uri = if MyMoip.environment == "sandbox"
+        self.base_uri "https://desenvolvedor.moip.com.br/sandbox"
       else
-        "https://www.moip.com.br"
+        self.base_uri "https://www.moip.com.br"
       end
     end
   end
