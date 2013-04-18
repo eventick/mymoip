@@ -3,9 +3,9 @@ module MyMoip
     include HTTParty
 
     attr_reader :token, :response
-
+    base_uri MyMoip.environment == "sandbox" ? "https://desenvolvedor.moip.com.br/sandbox" : "https://www.moip.com.br"
+    
     def initialize(token)
-      api_url
       @token = token
       @auth = {
         username: MyMoip.token,
@@ -69,15 +69,6 @@ module MyMoip
 
     def id
       payment["CodigoMoIP"]
-    end
-
-    private
-    def api_url
-      self.base_uri = if MyMoip.environment == "sandbox"
-        self.base_uri "https://desenvolvedor.moip.com.br/sandbox"
-      else
-        self.base_uri "https://www.moip.com.br"
-      end
     end
   end
 end
