@@ -4,7 +4,7 @@ module MyMoip
     debug_output $stderr
 
     attr_reader :token, :response
-    base_uri( MyMoip.environment == "production" ? "https://www.moip.com.br" : "https://desenvolvedor.moip.com.br/sandbox")
+    base_uri MyMoip.api_url
     
     def initialize(token)
       @token = token
