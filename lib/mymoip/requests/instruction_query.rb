@@ -3,9 +3,9 @@ module MyMoip
     include HTTParty
     debug_output $stderr
 
-    attr_reader :token, :response
+    attr_reader :token, :response, :payment
     base_uri Rails.env == "production" ? "https://www.moip.com.br" : "https://desenvolvedor.moip.com.br/sandbox"
-    
+
     def initialize(token)
       @token = token
       @auth = {
@@ -18,14 +18,11 @@ module MyMoip
       options = {:basic_auth => @auth}
       url = "/ws/alpha/ConsultarInstrucao/#{@token}"
       @response = self.class.get(url, options)
+      @payment = last_payment
     end
 
     def result
       @response["ConsultarTokenResponse"]["RespostaConsultar"]["Autorizacao"]
-    end
-    
-    def payment
-      result["Pagamento"]
     end
     
     def buyer_name
@@ -45,31 +42,41 @@ module MyMoip
     end
 
     def gross_amount
-      payment["TotalPago"]["__content__"]
+      @payment["TotalPago"]["__content__"]
     end
 
     def fee_amount
-      payment["TaxaMoIP"]["__content__"]
+      @payment["TaxaMoIP"]["__content__"]
     end
 
     def net_amount
-      payment["ValorLiquido"]["__content__"]
+      @payment["ValorLiquido"]["__content__"]
     end
 
     def payment_type
-      payment["FormaPagamento"]
+      @payment["FormaPagamento"]
     end
 
     def payment_flag
-      payment["InstituicaoPagamento"]
+      @payment["InstituicaoPagamento"]
     end 
     
     def status
-      payment["Status"]["Tipo"]
+      @payment["Status"]["Tipo"]
     end 
 
     def id
-      payment["CodigoMoIP"]
+      @payment["CodigoMoIP"]
+    end
+
+    private
+    def last_payment
+      results = result["Pagamento"].to_a
+      @payment = results.first
+      results.each do |r|
+        @payment = r if r["Status"]["__content__"] != "Iniciado" 
+      end
+      @payment
     end
   end
 end
