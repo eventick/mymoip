@@ -71,10 +71,14 @@ module MyMoip
 
     private
     def last_payment
-      results = result["Pagamento"].to_a
-      @payment = results.first
-      results.each do |r|
-        @payment = r if r["Status"]["__content__"] != "Iniciado" 
+      payment = result["Pagamento"]
+      if payment.kind_of?(Hash)
+        @payment = payment
+      else
+        @payment = payment.first
+        payment.each do |r|
+          @payment = r if r["Status"]["__content__"] != "Iniciado" 
+        end
       end
       @payment
     end
