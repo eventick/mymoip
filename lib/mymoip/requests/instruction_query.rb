@@ -4,6 +4,7 @@ module MyMoip
     debug_output $stderr
 
     attr_reader :token, :response, :payment
+    #base_uri "https://www.moip.com.br"
     base_uri Rails.env == "production" ? "https://www.moip.com.br" : "https://desenvolvedor.moip.com.br/sandbox"
 
     def initialize(token)
@@ -11,6 +12,8 @@ module MyMoip
       @auth = {
         username: MyMoip.token,
         password: MyMoip.key
+        #username: "J05DN1OGT3U95MEPCM3IDCVXUCIKIIYS",
+        #password: "T4G88BSAFLEQZXTCWVUWSJLYDDL9X47ATRLI01RN"
       }
     end
 
@@ -34,11 +37,11 @@ module MyMoip
     end
 
     def date
-      DateTime.parse(payment["Data"])
+      DateTime.parse(@payment["Data"])
     end
 
     def escrow_end_date
-      DateTime.parse(payment["DataCredito"])
+      DateTime.parse(@payment["DataCredito"])
     end
 
     def gross_amount
@@ -77,7 +80,8 @@ module MyMoip
       else
         @payment = payment.first
         payment.each do |r|
-          @payment = r if r["Status"]["__content__"] != "Iniciado" 
+          payment_date = DateTime.parse(r["Data"])
+          @payment = r if payment_date > self.date 
         end
       end
       @payment
