@@ -4,7 +4,8 @@ module MyMoip
 
     attr_accessor :id, :payment_reason, :values, :payer,
                   :commissions, :fee_payer_login, :payment_receiver_login,
-                  :payment_receiver_name, :url_notificacao, :url_retorno
+                  :payment_receiver_name, :url_notificacao, :url_retorno,
+                  :payment_method
 
     validates_presence_of :id, :payment_reason, :values
     validate :commissions_value_must_be_lesser_than_values
@@ -21,6 +22,7 @@ module MyMoip
       self.payment_receiver_name  = attrs[:payment_receiver_name]
       self.url_notificacao        = attrs[:url_notificacao]
       self.url_retorno            = attrs[:url_retorno]
+      self.payment_method         = attrs[:payment_method]
     end
 
     def to_xml(root = nil)
@@ -45,6 +47,7 @@ module MyMoip
           n2.Pagador { |n3| @payer.to_xml(n3) } if self.payer
           n2.URLNotificacao(@url_notificacao) if self.url_notificacao
           n2.URLRetorno(@url_retorno) if self.url_retorno
+          payment_method_to_xml(n2) if payment_method.present?
         end
       end
 
@@ -80,6 +83,10 @@ module MyMoip
         commissions.each { |c| c.to_xml(n) }
         n.PagadorTaxa { |pt| pt.LoginMoIP(fee_payer_login) } if fee_payer_login
       end
+    end
+
+    def payment_method_to_xml(node)
+      self.payment_method.to_xml(node)
     end
 
     def payment_receiver_to_xml(node)
