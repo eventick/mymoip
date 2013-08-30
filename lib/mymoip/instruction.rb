@@ -8,7 +8,7 @@ module MyMoip
                   :payment_method
 
     validates_presence_of :id, :payment_reason, :values
-    validate :commissions_value_must_be_lesser_than_values
+    #validate :commissions_value_must_be_lesser_than_values
     validate :payment_receiver_presence_in_commissions
 
     def initialize(attrs)

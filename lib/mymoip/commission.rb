@@ -10,7 +10,7 @@ module MyMoip
     validates_numericality_of :fixed_value, greater_than_or_equal_to: 0,
                                             allow_nil: true
     validates_numericality_of :percentage_value, greater_than_or_equal_to: 0,
-                                                 less_than_or_equal_to: 1,
+                                                 less_than_or_equal_to: 100,
                                                  allow_nil: true
 
     def initialize(attrs)
@@ -24,7 +24,7 @@ module MyMoip
       if fixed_value
         fixed_value
       elsif percentage_value
-        percentage_value * instruction.gross_amount
+        (percentage_value * instruction.gross_amount) / 100
       else
         raise ArgumentError, 'Cannot give gross_amount without fixed_value or percentage_value'
       end
